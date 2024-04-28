@@ -15,3 +15,9 @@
 - TokenBasedRememberMeServices - 쿠키 기반 토큰의 보안을 위해 해싱 사용
 - PersistentTokenBasedRememberMeServices - 생성된 토큰을 저정하기위해 데이터베이스 또는 다른 영구 저장매체 사용
 - 두 구현 모두 사용자의 정보 검색을 위한 UserDetailsService 가 필요
+
+## RememberMeAuthenticationFilter
+- SecurityContextHolder 에 Authentication 이 포함되지 않은 경우 실행되는 필터
+- 세션이 만료되었거나 어플리케이션 종룡로 인해 인증 상태가 소멸된 경우 토큰 기반 인증을 사용해 유효성을 검사하고 토큰이 검증되면 자동 로그인 처리 수행
+
+![img.png](img/img.png)
