@@ -8,7 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.List;
 
-public class CustomAuthenticationProvider implements AuthenticationProvider {
+public class CustomAuthenticationProvider2 implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -24,9 +24,6 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public boolean supports(Class<?> authentication) {
-
-        // return true; 모든 인증에 대해서 인증 처리를 한다
-        // return false; 모든 인증에 대해  인증 처리를 하지 않는다.
         return authentication.isAssignableFrom(UsernamePasswordAuthenticationToken.class);
     }
 }
