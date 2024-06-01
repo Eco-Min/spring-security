@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,12 +24,15 @@ public class SecurityConfig {
                         .requestMatchers("/invalidSessionUrl", "expiredUrl").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults())
-                .sessionManagement(session -> session
+                /*.sessionManagement(session -> session
                         .invalidSessionUrl("/invalidSessionUrl")
                         .maximumSessions(1)
                         .maxSessionsPreventsLogin(false)
                         .expiredUrl("/expiredUrl")
-                );
+                )*/
+//                .sessionManagement(session -> session.sessionFixation().none());
+//                HttpSessionSecurityContextRepository.java readSecurityContextFromSession() 에서 확인 가능
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();
 
     }
