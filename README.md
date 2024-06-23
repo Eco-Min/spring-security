@@ -85,3 +85,112 @@ public Map<String, BankAccount> readAccounts2(){
     return dataService.readMap();
 }
 ```
+
+## 그외 기능들
+
+### @Secured
+- 지정된 권한(역할)을 가진 사용자만 해당 메소드를 호출할 수 있으며 더 풍부한 형식을 지원하는 @PreAuthorize 사용을 권장한다
+- 스프링 시큐리티 설정에서 @EnableMethodSecurity(securedEnabled = true) 설정을 활성화해야 한다
+```java
+@Secured("ROLE_USER")
+public void performUserOperation() {
+// ROLE_USER 권한을 가진 사용자만 이 메소드를 실행할 수 있습니다.
+}
+```
+
+### JSR-250
+- @RolesAllowed, @PermitAll 및 @DenyAll 어노테이션 보안 기능이 활성화 된다
+- 스프링 시큐리티 설정에서 @EnableMethodSecurity(jsr250Enabled = true) 설정을 활성화해야 한다
+```java
+@RolesAllowed("USER")
+public void editDocument() {
+// 'ROLE_USER' 권한을 가진 사용자만 문서를 편집할 수 있습니다.
+}
+@PermitAll
+public void viewDocument() {
+// 모든 사용자가 문서를 볼 수 있습니다.
+}
+@DenyAll
+public void hiddenMethod() {
+// 어떠한 사용자에게도 접근이 허용되지 않습니다.
+}
+``` 
+
+### 메타 주석 사용
+- 특정 사용을 위해 편리성과 가독성을 높일 수 있는 매타 주석을 지원한다.
+```java
+@Target({ ElementType.METHOD, ElementType.TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+@PreAuthorize("hasRole('ADMIN')")
+public @interface IsAdmin {}
+
+@Target({ ElementType.METHOD, ElementType.TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+@PostAuthorize("returnObject.owner == authentication.name")
+public @interface RequireOwnership {}
+```
+- @PreAuthorize("hasRole('ADMIN')")를 다음과 같이 @IsAdmin
+```java
+@IsAdmin
+public BankAccount readAccount(Long id) {
+// ADMIN 권한을 가진 사용자에게 메소드 호출이 승인 될 수 있다
+}
+@RequireOwnership
+public Account readAccount(Long id) {
+// 'Account'가 로그인한 사용자에게 속할 경우에만 반환된다
+}
+```
+### 특정 주석 활성화
+- 특정 주석을 활성화하려면 @EnableGlobalMethodSecurity 어노테이션을 사용한다.
+- Method Security 의 사전 구성을 비활성화한 다음 @PostAuthorize 를 활성화한다
+```java
+@EnableMethodSecurity(prePostEnabled = false)
+class MethodSecurityConfig {
+    @Bean 
+    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+    Advisor postAuthorize() {
+        return AuthorizationManagerAfterMethodInterceptor.postAuthorize();
+    }
+}
+```
+
+### 커스텀 빈을 사용하여 표현식 구현하기
+
+- 사용자 정의 빈을 생성하고 새로운 표현식으로 사용할 메서드를 정의하고 권한 검사 로직을 구현한다.
+
+```java
+@GetMapping("/delete")
+@PreAuthorize("@authorizer.isUser(#root)") //,빈,이름을,참조하고,접근,제어,로직을,수행한다
+public void delete() {
+    // 사용자가 삭제 권한이 있는지 확인
+}
+
+@Component("authorizer")
+class MyAuthorizer{
+    public boolean isUser(MethodSecurityExpressionOperations root) {
+        boolean decision = root.hasAuthority("ROLE_USER"); // 인증된 사용자가 ROLE_USER 권한을 가지고 있는지를 검사
+        return decision;
+    }
+}
+```
+
+### 클래스 레벨 권한 부여
+- 모든 메소드는 클래스 수준의 권한 처리 동작을 상속한다
+- 메서드에 어노테이션을 선언한 메소드는 클래스 수준의 어노테이션을 덮어쓰게 된다
+- 인터페이스에도 동일한 규칙이 적용되지만 클래스가 두 개의 다른 인터페이스로부터 동일한 메서드의 어노테이션을 상속받는 경우에는    
+  시작할 때 실패한다. 그래서 구체적인 메소드에 어노테이션을 추가함으로써 모호성을 해결할 수 있다
+```java
+@Controller
+@PreAuthorize("hasAuthority('ROLE_USER')")
+public class MyController {
+    @GetMapping("/endpoint")
+    public String endpoint() { ...}
+}
+@Controller
+@PreAuthorize("hasAuthority('ROLE_USER')")
+public class MyController {
+    @GetMapping("/endpoint")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')") // 이 설정이 우선적으로 동작한다
+    public String endpoint() { ...}
+}
+```
