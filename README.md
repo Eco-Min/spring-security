@@ -70,3 +70,33 @@ http.authorizeHttpRequests(auth -> auth
 
 [CustomAuthorizationManager.java](/src/main/java/com/spring/security/CustomAuthorizationManager.java)
 
+## RequestMatcherDelegatingAuthorizationManager
+- RequestMatcherDelegatingAuthorizationManager 는 RequestMatcher 와 AuthorizationManager 를 매핑하여 저장하고,   
+  사용자의 요청 정보와 매핑된 AuthorizationManager 를 사용하여 권한 검사를 수행한다
+- RequestMatcherDelegatingAuthorizationManager 의 mappings 속성에 직접 RequestMatcherEntry 객체를 생성하고 추가한다
+
+```java
+RequestMatcherEntry<T>
+    .getEtnry() // 요청 패턴에 맾이된 AuthorizationManager 객체를 반환
+    .getReqeustMatcher() //요청 패턴을 저장한 RequestMatcher 객체를 반환
+```
+
+### 적용
+- RequestMatcherDelegatingAuthorizationManager 를 감싸는 CustomRequestMatcherDelegatingAuthorizationManager 를 구현한다   
+
+CustomRequestMatcherDelegatingAuthorizationManager   
+RequestMatcherDelegatingAuthorizationManager(mappings)   
+
+```java
+
+http.authorizeHttpRequests(auth -> auth
+        .anyRequest().access(new CustomRequestMatcherDelegatingAuthorizationManager());
+```
+- 적용 후 구조
+```java
+RequestMatcherDelegatingAuthorizationManager > CustomRequestMatcherDelegatingAuthorizationManager > CustomAuthorizationManager   
+access() 설정시 기본 생성되는 대리자 객체 ////////// -> 직접 구현한 커스텀 객체
+```
+- 요청에 대한 권한 검사를 RequestMatcherDelegatingAuthorizationManager 가 처리하게 되고,   
+  CustomRequestMatcherDelegatingAuthorizationManager 가 모든 요청에 대한 권한 검사를 처리하게 된다
+- 위의 적용후 구조는 개선이 필요하다.
