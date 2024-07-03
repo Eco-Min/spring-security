@@ -35,6 +35,7 @@ public class SecurityConfig {
                         .requestMatchers("/user").hasRole("USER")
                         .requestMatchers("/db").access(new WebExpressionAuthorizationManager("hasRole('DB')"))
                         .requestMatchers("/admin").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api").access(new CustomAuthorizationManager())
                         .anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable);
@@ -43,10 +44,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(){
+    public UserDetailsService userDetailsService() {
         UserDetails user = User.withUsername("user").password("{noop}1111").authorities("MYPREFIX_USER").build();
         UserDetails db = User.withUsername("db").password("{noop}1111").roles("DB").build();
-        UserDetails admin = User.withUsername("admin").password("{noop}1111").roles("ADMIN","SECURE").build();
-        return  new InMemoryUserDetailsManager(user, db, admin);
+        UserDetails admin = User.withUsername("admin").password("{noop}1111").roles("ADMIN", "SECURE").build();
+        UserDetails secure = User.withUsername("secure").password("{noop}1111").roles("SECURE").build();
+        return new InMemoryUserDetailsManager(user, db, admin, secure);
     }
 }

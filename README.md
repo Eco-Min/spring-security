@@ -47,3 +47,26 @@ SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http){
     return http.build();
 }
 ```
+## 요청기반 Custom_authorizationManager
+
+- 스프링 시큐리티 인가 설정 시 선언적 방식이 아닌 프로그래밍 방식으로 구현할 수 있으며 access(AuthorizationManager) API 를 사용한다
+- access() 에는 AuthorizationManager<RequestAuthorizationContext> 타입의 객체를 전달할 수 있으며 사용자의 요청에 대한 권한 검사를    
+access()에 지정한 AuthorizationManager 가 처리하게 된다
+- access() 에 지정한 AuthorizationManager 객체는 RequestMatcherDelegatingAuthorizationManager 의 매핑 속성에 저장된다
+
+```java
+/*
+http.authorizeHttpRequests(auth ->
+    auth.requestMatcher().access(AuthorizationManager));
+*/
+http.authorizeHttpRequests(auth -> auth
+    .requestMatchers("/user", "/myPage").hasAuthority("USER")
+    .requestMatchers("/admin").hasRole("ADMIN")
+    .requestMatchers("/api").access(new CustomAuthorizationManager())
+```
+- 특정한 엔드포인트에 대한 권한 검사를 수행하기 위해 AuthorizationManager를 구현하여 설정한다.
+- /user, /myPage, /admin 요청 패턴의 권한 검사는 AuthorityAuthorizationManager 가 처리
+- /api 요청 패턴의 권한 검사는 CustomAuthorizationManager 가 처리하게 된다   
+
+[CustomAuthorizationManager.java](/src/main/java/com/spring/security/CustomAuthorizationManager.java)
+
