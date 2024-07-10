@@ -1,15 +1,27 @@
 package com.spring.security;
 
-import org.springframework.security.core.Authentication;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 public class IndexController {
 
-    @GetMapping("/")
-    public Authentication index(Authentication authentication) {
-        return authentication;
+    private final DataService dataService;
+
+    @GetMapping("/user")
+    public String user(){
+        return dataService.getUser();
+    }
+
+    @GetMapping("/owner")
+    public Account owner(String name){
+        return dataService.getOwner(name);
+    }
+    @GetMapping("/display")
+    public String display(){
+        return dataService.display();
     }
 
 }
