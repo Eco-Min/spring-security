@@ -1,3 +1,4 @@
+/*
 package com.spring.security.method;
 
 import org.aopalliance.intercept.MethodInvocation;
@@ -47,4 +48,4 @@ public class MethodSecurityConfig {
 
         return compositePointcut;
     }
-}
+}*/
