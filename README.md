@@ -6,7 +6,7 @@
 - AuthenticationEventPublisher 의 구현체로 DefaultAuthenticationEventPublisher 가 제공된다
 
 ## 인증 이벤트 종류
-- 인증 성공 & 실패 이벤트를 포함하는 사우이 이벤트 클래스   
+- 인증 성공 & 실패 이벤트를 포함하는 상위 이벤트 클래스   
 ```AbstractAuthenticationEvent```, ```AbstractAuthenticationFailureEvent```
 - 인정 성공 이벤트 클래스   
 ```AuthenticationSuccessEvent```, ```InteractiveAuthenticationSuccessEvent```
