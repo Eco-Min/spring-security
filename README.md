@@ -1,7 +1,7 @@
 # 인가 아키텍처
 
 ## 요청 기반 인가 처리
-- 스프링 시큐리티는 요청 기반의 인증된 사용자 및 특정 권한ㅇ르 가진 사용자의 자원 접근 허용여부를 결정하는 인가 관리자 클래스를 제공
+- 스프링 시큐리티는 요청 기반의 인증된 사용자 및 특정 권한을 가진 사용자의 자원 접근 허용여부를 결정하는 인가 관리자 클래스를 제공
 - 대표적으로 AuthorityAuthorizationManager, AuthenticatedAuthorizationManager 와 대리자인    
 RequestMatcherDelegatingAuthorizationManager 가 있다.
 
