@@ -1,7 +1,7 @@
 # 인가 아키텍쳐
 
 ## 메서드 기반 인가 관리자 PreAuthorizeAuthorizationManager
-- 스프링 시큐리티는 메서드 기반의 인증된 사용자 및 특정 권한ㅇ르 가진 사용자의 자원 접근 허요 여부를 결정하는 인가 관리자 클래스를 제공
+- 스프링 시큐리티는 메서드 기반의 인증된 사용자 및 특정 권한울 가진 사용자의 자원 접근 허요 여부를 결정하는 인가 관리자 클래스를 제공
 - PreauthorizeAuthorizationManager, PostAuthorizeAuthorizationManager, Jsr250AuthorizationManager, SecuredAuthorizationManager 등이 있다.
 - 메서드 기반 권한 부여는 내부적으로 AOP 방식에 의해 초기화 설정이 으로어 지며 메서드 호출을 MethodInterceptor 가 가로채어 처리하고 있다.
 - Aop 기반으로 ```AbstractAutoProxyCreator.createProxyClass``` 를 통해 프록시 객체를 생성하고 ```AbstractAutoProxyCreator.postProcessAfterInitialization``` 를 통해 프록시 객체를 생성한다.
