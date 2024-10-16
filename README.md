@@ -1,37 +1,49 @@
 # 이벤트 처리
 
-## Authentication Events
-- 스프링 시큐리티는 인증이 성공하거나 실패하게 되면 AuthenticationSuccessEvent 또는 AuthenticationFailureEvent 를 발생시킨다
-- 이벤트를 수신하려면 ApplicationEventPublisher 를 사용하거나 시큐리티에서 제공하는 AuthenticationEventPublisher 를 사용해서 발행해야 한다
-- AuthenticationEventPublisher 의 구현체로 DefaultAuthenticationEventPublisher 가 제공된다
-
-## 인증 이벤트 종류
-- 인증 성공 & 실패 이벤트를 포함하는 상위 이벤트 클래스   
-```AbstractAuthenticationEvent```, ```AbstractAuthenticationFailureEvent```
-- 인정 성공 이벤트 클래스   
-```AuthenticationSuccessEvent```, ```InteractiveAuthenticationSuccessEvent```
-- 인증 실패 이벤트 클래스   
-```AuthenticationFailureBadCredentialsEvent```, ```AuthenticationFailureCredentialsExpiredEvent```,   
-```AuthenticationFailureDisabledEvent```, ```AuthenticationFailureExpiredEvent```,    
-```AuthenticationFailureLockedEvent```, ```AuthenticationFailureProviderNotFoundEvent```,    
-```AuthenticationFailureServiceExceptionEvent```, ```AuthenticationFailureUsernameNotFoundEvent```
-
-- 스프링의 이벤트 리스닝 메커니즘은 자바의 클래스 상속 구조를 따르기 때문에 특정 이벤트의 리스너는 해당 이벤트 뿐 아니라    
-그이벤트의 부모클래스 들로부터 발생하는 이벤트도 처리 할 수 있다.
-
-### event 발행 방법
-- ApplicationEventPublisher.publishEvent(ApplicationEvent)
-- AuthenticationEventPublisher.publishAuthenticationSuccess(Authentication)
-- AuthenticationEventPublisher.publishAuthenticationFailure(AuthenticationException, Authentication)
-
-### event 수신 방법
+## Authentication Events Publisher
 ```java
-@Component
-public class AuthenticationEvents {
-    @EventListener
-    public void onSuccess(AuthenticationSuccessEvent success) {…}
-    
-    @EventListener
-    public void onFailure(AbstractAuthenticationFailureEvent failures) {…}
+@Bean
+@Bean
+public AuthenticationEventPublisher customAuthenticationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+    Map<Class<? extends AuthenticationException>, Class<? extends AbstractAuthenticationFailureEvent>> mapping = 
+            Collections.singletonMap(CustomException.class, CustomAuthenticationFailureEvent.class);
+
+    DefaultAuthenticationEventPublisher authenticationEventPublisher = new DefaultAuthenticationEventPublisher(applicationEventPublisher);
+    authenticationEventPublisher.setAdditionalExceptionMappings(mapping); 
+    // CustomException 을 던지면 CustomAuthenticationFailureEvent 를 발행하도록 추가 함
+
+    return authenticationEventPublisher;
+}
+```
+커스텀한 예외를 추가 할 수있다.
+```java
+uthenticationEventPublisher.publishAuthenticationFailure(new CustomException("CustomException"), authentication);
+```
+이걸 EventListener 가 받는다고 하면
+```java
+@EventListener
+public void onFailure(CustomAuthenticationFailureEvent failures) { // 커스텀 예외에 대한 이벤트를 수신할 수 있다.
+    System.out.println(" failures = " + failures.getException().getMessage());
+}
+```
+
+## 기본 이벤트 설정
+AuthenticationException 이 발생시 해당 예외에 매핑된 이벤트가 발행이 안되어 있을경우 기본 AuthenticationFailureEvent 를 발행 및 수신 가능하다.
+```java
+@Bean
+public AuthenticationEventPublisher defaulAuthenticationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+    DefaultAuthenticationEventPublisher authenticationEventPublisher = 
+            new DefaultAuthenticationEventPublisher(applicationEventPublisher);
+    authenticationEventPublisher.setDefaultAuthenticationFailureEvent(CustomDefaultAuthenticationFailureEvent.class);
+    return authenticationEventPublisher;
+}
+```
+```java
+eventPublisher.publishAuthenticationFailure(new CustomAuthenticationException("CustomAuthenticationException"), authentication);
+```
+```java
+@EventListener
+public void onSuccess(CustomAuthenticationFailureEvent failures) { // 매핑이 안된 모든 예외에 대해 받는다.
+System.out.println("failures = " + failures.getException().getMessage());
 }
 ```
