@@ -1,24 +1,24 @@
 # 통합 하기
 
 ## 개요
-- 스프링 시큐리티는 다양한 프레임워크 및 API 와의 통합을 제공하고 있으며 Servlet 3 과 Spring MVC 와 통합을 통해 여러 편리한 기능들을 사용할 수 있다
-- 인증 관련 기능들을 필터가 아닌 서블릿 영역에서 처리할 수 있다
+- Spring Security 는 Spring MVC Controller 에서 Callable 을 실행하는 비동기 스레드에 SecurityContext 를 자동으로 설정하도록 지원한다
+- Spring Security 는 WebAsyncManager 와 통합하여 SecurityContextHolder 에서 사용 가능한 SecurityContext 를 Callable 에서   
+접근 가능하도록 해 준다
 
-## Servlet 3+ 통합
-1. SecurityContextHolderAwareRequestFilter
-   - HTTP 요청이 처리될 때 HttpServletRequest 에 보안 관련 메소드를 추가적으로 제공하는 래퍼(SecurityContextHolderAwareRequestWrapper)    
-   클래스를 적용한다
-   - 이를 통해 개발자는 서블릿 API 의 보안 메소드를 사용하여 인증, 로그인, 로그아웃 등의 작업을 수행할 수 있다
-2. HttpServlet3RequestFactory
-   - Servlet 3 API 와의 통합을 제공하기 위한 Servlet3SecurityContextHolderAwareRequestWrapper 객체를 생성한다
-3. Servlet3SecurityContextHolderAwareRequestWrapper
-   - HttpServletRequest 의 래퍼 클래스로서 Servlet 3.0의 기능을 지원하면서 동시에 SecurityContextHolder 와의 통합을 제공한다
-   - 이 래퍼를 사용함으로써 SecurityContext 에 쉽게 접근할 수 있고 Servlet 3.0 의    
-   비동기 처리와 같은 기능을 사용하는 동안 보안 컨텍스트를 올바르게 관리할 수 있다
+## WebAsyncManagerIntegrationFilter
+- SecurityContext 와 WebAsyncManager 사이의 통합을 제공하며 WebAsyncManager 를 생성하고 SecurityContextCallableProcessingInterceptor   
+를 WebAsyncManager 에 추가한다
 
-## 구조 및 API
-![구조 및 API](./img/구조및API.png)
+## WebAsyncManager
+- 스레드 풀의 비동기 스레드를 생성하고 Callable 을 받아 실행 시키는 주체로서 등록된 SecurityContextCallableProcessingInterceptor 를 통해   
+현재 스래드가 보유하고 있는 SecurityContext 객체를 비동시 스레드의 ThreadLocal 에 저장한다.
 
 ## 코드 구현
-- [IndexController.java_login](./src/main/java/com/spring/security/IndexController.java)   
-- [IndexController.java_users](./src/main/java/com/spring/security/IndexController.java)
+- [AsyncService.java](./src/main/java/com/spring/security/AsyncService.java)
+- [IndexController.java](./src/main/java/com/spring/security/IndexController.java)
+- 비동시 스레드가 수행하는 Callable 영역 내에서 자산의 ThreadLocal 에 저장된 SecurityContext 를 참조 가능하며 이는   
+부모 스레드가 가지고 있는 SecurityContext 와 동일하다
+- @Async 나 다른 비동기 기술은 스프링 시큐리이놔 통합되어 있지 않기 때문에 비동기 스레드에 SecurityContext 가 적용되지 않는다.
+
+## 흐름도
+![AsyncSecurity](./img/AsyncSecyrity.png)
