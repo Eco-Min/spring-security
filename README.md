@@ -20,5 +20,5 @@
 ![구조 및 API](./img/구조및API.png)
 
 ## 코드 구현
-- [IndexController.java_login](./src/main/java/com/example/demo/IndexController.java)   
-- [IndexController.java_users](./src/main/java/com/example/demo/IndexController.java)
+- [IndexController.java_login](./src/main/java/com/spring/security/IndexController.java)   
+- [IndexController.java_users](./src/main/java/com/spring/security/IndexController.java)
