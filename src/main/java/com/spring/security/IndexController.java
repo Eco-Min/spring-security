@@ -1,26 +1,43 @@
 package com.spring.security;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-
 @RestController
 public class IndexController {
-
+    // 익명 사용자인지 아닌지 확인하기위해 사용
+    AuthenticationTrustResolverImpl trustResolver = new AuthenticationTrustResolverImpl();
     @GetMapping("/")
-    public String index(HttpServletRequest request){
-        return "index";
+    public String index(){
+        Authentication authentication = SecurityContextHolder.getContextHolderStrategy().getContext().getAuthentication();
+        return trustResolver.isAnonymous(authentication) ? "anonymous":"authenticated";
     }
     @GetMapping("/user")
-    public String user(){
-        return "user";
+    public User user(){
+        Authentication authentication = SecurityContextHolder.getContextHolderStrategy().getContext().getAuthentication();
+        return authentication == null ? null : (User)authentication.getPrincipal();
+    }
+    @GetMapping("/user2")
+    public User user2(@AuthenticationPrincipal User user){
+        return user;
+    }
+    @GetMapping("/user3")
+    public User user3(@CurrentUser User user){
+        return user;
+    }
+    // User 클래스의 username을 반환
+    @GetMapping("/username")
+    public String username(@AuthenticationPrincipal(expression = "username") String username){
+        return username;
+    }
+    @GetMapping("/username2")
+    public String username2(@CurrentUserName String username){
+        return username;
     }
     @GetMapping("/db")
     public String db(){
@@ -29,21 +46,5 @@ public class IndexController {
     @GetMapping("/admin")
     public String admin(){
         return "admin";
-    }
-
-    @GetMapping("/login")
-    public String login(HttpServletRequest request, MemberDto memberDto) throws ServletException, IOException {
-        request.login(memberDto.getUsername(), memberDto.getPassword());
-        System.out.println("login is successful");
-        return "login";
-    }
-
-    @GetMapping("/users")
-    public List<MemberDto> users(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        boolean authenticate = request.authenticate(response);
-        if (authenticate) {
-            return List.of(new MemberDto("user","1111"));
-        }
-        return Collections.emptyList();
     }
 }
