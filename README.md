@@ -8,16 +8,16 @@
 - ApplicationEventPublisher.publishEvent(ApplicationEvent)
 - AuthorizationEventPublisher.publishAuthorizationEvent(Supplier<Authentication>, T, AuthorizationDecision)
 ### 이벤트 수신 방법
-[AuthorizationEvents](./java/com/spring/security/AuthorizationEvents.java)
+[AuthorizationEvents](./src/main/java/com/spring/security/AuthorizationEvents.java)
 
 ## 인가 이벤트 발행 & 수신
 - 인가 이벤트를 발행하기 위해서는 SpringAuthorizationEventPublisher 를 사용해야 한다   
-[SecurityConfig_authorizationEventPublisher()](./java/com/spring/security/SecurityConfig.java)
+[SecurityConfig_authorizationEventPublisher()](./src/main/java/com/spring/security/SecurityConfig.java)
 - 인가가 실패 했을 경우만 발생 되며 성공은 발생하지 않는다
 
 ## 커스텀 AuthorizationEventPublisher 구현
 - AuthorizationEventPublisher 를 구현한 클래스를 만들어서 사용할 수 있다
-[MyAuthorizationEventPublisher](./java/com/example/spring/MyAuthorizationEventPublisher.java)
+[MyAuthorizationEventPublisher](./src/main/java/com/example/spring/MyAuthorizationEventPublisher.java)
 ```java
 public class MyAuthorizationEventPublisher implements AuthorizationEventPublisher {
     ...
