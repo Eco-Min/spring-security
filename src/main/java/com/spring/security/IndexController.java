@@ -1,7 +1,13 @@
 package com.spring.security;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.concurrent.Callable;
 
 @RestController
 public class IndexController {
@@ -10,6 +16,7 @@ public class IndexController {
     public String index(){
         return "index";
     }
+
     @GetMapping("/user")
     public String user(){
         return "user";
@@ -21,9 +28,5 @@ public class IndexController {
     @GetMapping("/admin")
     public String admin(){
         return "admin";
-    }
-    @GetMapping("/api")
-    public String api(){
-        return "api";
     }
 }
