@@ -1,19 +1,21 @@
 # 고급 설정
 
-## Custom DSLs
-- Spring Security 는 사용자정의 DSL을 구현할 수 있도록 지원 한다.
-- DSL 을 구성하면 필터, 핸들로, 메소드, 속성등을 한곳에 정의하여 처리할 수 있는 편리함을 제공한다.
-- [DSL 이런 뭔가](https://devbksheen.tistory.com/entry/%EB%AA%A8%EB%8D%98-%EC%9E%90%EB%B0%94-DSL%EB%8F%84%EB%A9%94%EC%9D%B8-%EC%A0%84%EC%9A%A9-%EC%96%B8%EC%96%B4%EC%9D%B4%EB%9E%80)
+## 이중화 설정
+-  이중화는 시스템의 부하를 분산하고, 단일 실패 지점(Single Point of Failure, SPOF) 없이 서비스를 지속적으로 제공하는 아키텍처를    
+구현하는 것을 목표로 하며 스프링 시큐리티는 이러한 이중화 환경에서 인증, 권한 부여, 세션 관리 등의 보안 기능을 제공한다
+-  스프링 시큐리티는 사용자 세션을 안전하게 관리하며 이중화된 환경에서 세션 정보를 공유할 수 있는 메커니즘을 제공하며 대표적으로    
+레디스 같은 분산캐시를 사용하여 세션 정보를 여러 서버 간에 공유할 수 있다
 
-## AbstractHttpConfigurer<AbstractHttpConfigurer, HttpSecurityBuilder>
-- AbstractHttpConfigurer 는 DSL 자기 자신
-- HttpSecurityBuilder 는 HttpSecurity
-- 사용자의 DSL 을 구현하기 위해서 상속받는 추상 클래스로서 구현 클래스는 두개의 메소드를 오버라이딩 한다.
-  - init(HttpSecurity http)(B builder) : HttpSecurity 의 구성요소를 성정 및 공유하는 작업
-  - configure(HttpSecurity http)(B builder) : 공동 클래스를 구성 하거나 사용자 정의 필터를 생성하는 작업
+> 즉, 여러대의 서버가 켜져 있으면 각 서버마다 세션을 가지고 있는데 이때 서비스 하나가 죽게 되면 세션 정보가 날아가게 되는데   
+> 이를 방지하기 위해 세션서버(레디스)를 두어 세션 정보를 저장하게 된다
 
-## API
--  HttpSecurity.with(C configurer, Customizer<C> customizer)
-    - configurer 는 AbstractHttpConfigurer 을 상속하고 DSL 을 구현한 클래스가 들어간다
-    - customizer 는 DSL 구현 클래스에서 정의한 여러 API 를 커스트 마이징한다 
-    - 동일한 클래스를 여러 번 설정하더라도 한번 만 적용 된다
+## 레디스 세션 서버
+### 로컬 환경 (Linux 기준)
+- 대부분의 Linux 에서 apt 또는 yum을 사용하여 레디스를 설치할 수 있다    
+ex) sudo apt-get install redis-server, sudo yum install redis ..
+-  설치 후 sudo service redis-server start 명령어로 레디스 서버를 시작한다
+### Docker를 사용한 설치
+-  Docker 가 설치된 환경에서 다음 명령어로 레디스 컨테이너를 실행할 수 있다   
+ex) docker run --name redis -p 6379:6379 -d redis
+- 이 명령어는 레디스 이미지를 다운로드하고, 이름이 redis인 컨테이너를 백그라운드에서 실행한다
+- 포트 6379를 사용하여 로컬 호스트와 연결한다
