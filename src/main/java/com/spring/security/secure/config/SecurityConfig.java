@@ -1,8 +1,8 @@
-package com.spring.security.config;
+package com.spring.security.secure.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -15,7 +15,10 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @EnableWebSecurity
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final UserDetailsService userDetailsService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -24,16 +27,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
-                .requestMatchers("/", "/signup").permitAll()
-                .anyRequest().authenticated()
-        ).formLogin(form -> form.loginPage("/login").permitAll());
+        http
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
+                        .requestMatchers("/", "/signup").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .formLogin(form -> form.loginPage("/login").permitAll())
+                .userDetailsService(userDetailsService);
 
         return http.build();
     }
 
-    @Bean
+//    @Bean
     public UserDetailsService userDetailsService() {
         UserDetails user = User.withUsername("user").password("{noop}1111").roles("USER").build();
         return new InMemoryUserDetailsManager(user);
