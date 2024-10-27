@@ -1,5 +1,6 @@
 package com.spring.security.users.domain.dto;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 
 @RequiredArgsConstructor
+@Getter
 public class AccountContext implements UserDetails {
 
     private final AccountDto accountDto;
