@@ -46,4 +46,9 @@ public class LoginController {
 
         return "login/denied";
     }
+
+    @GetMapping(value="/api/login")
+    public String restLogin(){
+        return "rest/login";
+    }
 }
