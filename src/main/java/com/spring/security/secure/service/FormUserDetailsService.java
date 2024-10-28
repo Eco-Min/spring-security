@@ -15,7 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service("userDetailsService")
+//@Service("userDetailsService")
+@Service
 @RequiredArgsConstructor
 public class FormUserDetailsService implements UserDetailsService {
 

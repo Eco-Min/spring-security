@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component("authenticationProvider")
+//@Component
 @RequiredArgsConstructor
 public class FormAuthenticationProvider implements AuthenticationProvider {
 
