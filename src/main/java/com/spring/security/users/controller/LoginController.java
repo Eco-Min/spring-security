@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class LoginController {
 
-    @GetMapping(value="/login")
+    @GetMapping("/login")
     public String login(@RequestParam(value = "error", required = false) String error,
                         @RequestParam(value = "exception", required = false) String exception, Model model){
         model.addAttribute("error",error);
@@ -38,7 +38,7 @@ public class LoginController {
         return "redirect:/login";
     }
 
-    @GetMapping(value="/denied")
+    @GetMapping("/denied")
     public String accessDenied(@RequestParam(value = "exception", required = false) String exception, @AuthenticationPrincipal AccountDto accountDto, Model model) {
 
         model.addAttribute("username", accountDto.getUsername());
@@ -47,7 +47,7 @@ public class LoginController {
         return "login/denied";
     }
 
-    @GetMapping(value="/api/login")
+    @GetMapping("/api/login")
     public String restLogin(){
         return "rest/login";
     }

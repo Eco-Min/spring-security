@@ -41,7 +41,7 @@ public class FormAuthenticationProvider implements AuthenticationProvider {
     }
 
     @Override
-    public boolean supports(Class<?> authentication) {
+    public boolean supports(Class<?> authentication) { // /api/login 호출시 RestAuthenticationToken.class 가 들어온다 token 값이 다르다 그래서 해당 관련된 로직을 다른 provider 를 만들어야 한다.
         return authentication.isAssignableFrom(UsernamePasswordAuthenticationToken.class);
     }
 }
