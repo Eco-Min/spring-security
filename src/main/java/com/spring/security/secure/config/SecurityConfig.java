@@ -14,12 +14,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -34,9 +28,12 @@ public class SecurityConfig {
 //    private final UserDetailsService userDetailsService;
     private final AuthenticationProvider authenticationProvider;
     private final AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> authenticationDetailsSource;
-    private final AuthenticationSuccessHandler authenticationSuccessHandler;
-    private final AuthenticationFailureHandler authenticationFailureHandler;
+    private final AuthenticationSuccessHandler formAuthenticationSuccessHandler;
+    private final AuthenticationFailureHandler formAuthenticationFailureHandler;
+
     private final AuthenticationProvider restAuthenticationProvider;
+    private final AuthenticationSuccessHandler restAuthenticationSuccessHandler;
+    private final AuthenticationFailureHandler restAuthenticationFailureHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -52,8 +49,8 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login").permitAll()
                         .authenticationDetailsSource(authenticationDetailsSource)
-                        .successHandler(authenticationSuccessHandler)
-                        .failureHandler(authenticationFailureHandler)
+                        .successHandler(formAuthenticationSuccessHandler)
+                        .failureHandler(formAuthenticationFailureHandler)
                 )
                 .exceptionHandling(ex -> ex
                         .accessDeniedHandler(new FormAccessDeniedHandler("/denied")))
@@ -87,6 +84,8 @@ public class SecurityConfig {
     private RestAuthenticationFilter restAuthenticationFilter(AuthenticationManager authenticationManager) {
         RestAuthenticationFilter authenticationFilter = new RestAuthenticationFilter();
         authenticationFilter.setAuthenticationManager(authenticationManager);
+        authenticationFilter.setAuthenticationSuccessHandler(restAuthenticationSuccessHandler);
+        authenticationFilter.setAuthenticationFailureHandler(restAuthenticationFailureHandler);
         return authenticationFilter;
     }
 }
