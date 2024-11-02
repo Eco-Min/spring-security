@@ -25,3 +25,14 @@
   ```java
   http.addFilterAfter(new CustomFilter(), UsernamePasswordAuthenticationFilter.class)
   ```
+  
+## SecurityContextRepository 설정
+- 인증 필터에서 인증에 성공한 이후 인증 객체를 세션에 저장할 수 있도록 HttpSessionSecurityContextRepository 를 지정한다.
+- AbstractAuthenticationProcessingFilter 상속하면 RequestAttributeSessionRepository 가 기본으로 설정 된다.
+- 즉, 세션의 영속성을 가지기 위해선 SecurityContextRepository 를 설정해야 한다.
+- 아래는 세션 기준으로 는 경우 이다.
+- [SecurityConfig.java / RestAuthenticationFilter](./src/main/java/com/spring/security/secure/config/SecurityConfig.java)
+- [RestAuthenticationFilter.java](./src/main/java/com/spring/security/filters/RestAuthenticationFilter.java)
+- 예시를 위해 세션에 저장할뿐 실제로는 jwt 를 사용하는 방법이 좋다. 
+  - 세션을 사용하면 서버의 부하가 증가하고 서버의 확장성이 떨어지기 때문이다.
+  - 동시성 처리를 위해 세션 클러스터링을 사용해야 하며, 이는 서버의 부하를 더욱 증가시킨다.
