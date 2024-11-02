@@ -1,7 +1,9 @@
 package com.spring.security.secure.config;
 
 import com.spring.security.filters.RestAuthenticationFilter;
+import com.spring.security.secure.entrypoint.RestAuthenticationEntryPoint;
 import com.spring.security.secure.handler.FormAccessDeniedHandler;
+import com.spring.security.secure.handler.RestAccessDeniedHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -72,12 +74,20 @@ public class SecurityConfig {
                 .securityMatcher("/api/**")
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
-                        .anyRequest().permitAll())
+                        .requestMatchers("/api", "/api/login").permitAll()
+                        .requestMatchers("/api/user").hasAuthority("ROLE_USER")
+                        .requestMatchers("/api/manager").hasAuthority("ROLE_MANAGER")
+                        .requestMatchers("/api/admin").hasAuthority("ROLE_ADMIN")
+                        .anyRequest().authenticated())
+//                        .anyRequest().permitAll())
                 .csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(
                         restAuthenticationFilter(http, authenticationManager),
                         UsernamePasswordAuthenticationFilter.class)
                 .authenticationManager(authenticationManager)
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(new RestAuthenticationEntryPoint())
+                        .accessDeniedHandler(new RestAccessDeniedHandler()))
         ; // Rest 방식의 비동기 통신은 클라이언트에 CSRF 토큰 값을 직접 전달해 주어야 한다. -> 일단 비활성화
 
         return http.build();

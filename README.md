@@ -36,3 +36,9 @@
 - 예시를 위해 세션에 저장할뿐 실제로는 jwt 를 사용하는 방법이 좋다. 
   - 세션을 사용하면 서버의 부하가 증가하고 서버의 확장성이 떨어지기 때문이다.
   - 동시성 처리를 위해 세션 클러스터링을 사용해야 하며, 이는 서버의 부하를 더욱 증가시킨다.
+
+## RestAuthenticationEntryPoint / RestAccessDeniedHandler
+- RestAuthenticationEntryPoint => 인증 x / 접근 거부 (401)
+  - login 페이지로 이동
+- RestAccessDeniedHandler => 인증 o / 접근 거부 (403)
+  - denied 페이지로 이동
