@@ -80,7 +80,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated())
 //                        .anyRequest().permitAll())
-                .csrf(AbstractHttpConfigurer::disable)
+//                .csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(
                         restAuthenticationFilter(http, authenticationManager),
                         UsernamePasswordAuthenticationFilter.class)
