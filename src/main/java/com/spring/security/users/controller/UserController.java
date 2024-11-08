@@ -1,7 +1,7 @@
 package com.spring.security.users.controller;
 
-import com.spring.security.users.domain.dto.AccountDto;
-import com.spring.security.users.domain.entity.Account;
+import com.spring.security.domain.dto.AccountDto;
+import com.spring.security.domain.entity.Account;
 import com.spring.security.users.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

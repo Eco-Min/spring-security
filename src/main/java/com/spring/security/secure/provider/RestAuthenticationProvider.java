@@ -3,7 +3,7 @@ package com.spring.security.secure.provider;
 import com.spring.security.exception.SecretException;
 import com.spring.security.secure.details.FormAuthenticationDetails;
 import com.spring.security.token.RestAuthenticationToken;
-import com.spring.security.users.domain.dto.AccountContext;
+import com.spring.security.domain.dto.AccountContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;

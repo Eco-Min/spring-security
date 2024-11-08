@@ -2,7 +2,7 @@ package com.spring.security.filters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring.security.token.RestAuthenticationToken;
-import com.spring.security.users.domain.dto.AccountDto;
+import com.spring.security.domain.dto.AccountDto;
 import com.spring.security.util.WebUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
