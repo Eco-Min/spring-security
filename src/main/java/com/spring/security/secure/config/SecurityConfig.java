@@ -1,6 +1,7 @@
 package com.spring.security.secure.config;
 
 import com.spring.security.filters.RestAuthenticationFilter;
+import com.spring.security.secure.dsl.RestApiDsl;
 import com.spring.security.secure.entrypoint.RestAuthenticationEntryPoint;
 import com.spring.security.secure.handler.FormAccessDeniedHandler;
 import com.spring.security.secure.handler.RestAccessDeniedHandler;
@@ -80,24 +81,31 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated())
 //                        .anyRequest().permitAll())
-//                .csrf(AbstractHttpConfigurer::disable)
-                .addFilterBefore(
+//                .csrf(AbstractHttpConfigurer::disable) // Rest 방식의 비동기 통신은 클라이언트에 CSRF 토큰 값을 직접 전달해 주어야 한다. -> 일단 비활성화
+//                여기서 부터 with 전까지 Dsl 방식으로 변경 하기때문에 필요가 없다.
+/*                .addFilterBefore(
                         restAuthenticationFilter(http, authenticationManager),
-                        UsernamePasswordAuthenticationFilter.class)
+                        UsernamePasswordAuthenticationFilter.class) */
                 .authenticationManager(authenticationManager)
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(new RestAuthenticationEntryPoint())
                         .accessDeniedHandler(new RestAccessDeniedHandler()))
-        ; // Rest 방식의 비동기 통신은 클라이언트에 CSRF 토큰 값을 직접 전달해 주어야 한다. -> 일단 비활성화
+                .with(new RestApiDsl<>(), restDsl -> restDsl
+                        .restSuccessHandler(restAuthenticationSuccessHandler)
+                        .restFailureHandler(restAuthenticationFailureHandler)
+                        .loginPage("/api/login")
+                        .loginProcessingUrl("/api/login")
+        )
+        ;
 
         return http.build();
     }
 
-    private RestAuthenticationFilter restAuthenticationFilter(HttpSecurity http, AuthenticationManager authenticationManager) {
+/*    private RestAuthenticationFilter restAuthenticationFilter(HttpSecurity http, AuthenticationManager authenticationManager) {
         RestAuthenticationFilter authenticationFilter = new RestAuthenticationFilter(http);
         authenticationFilter.setAuthenticationManager(authenticationManager);
         authenticationFilter.setAuthenticationSuccessHandler(restAuthenticationSuccessHandler);
         authenticationFilter.setAuthenticationFailureHandler(restAuthenticationFailureHandler);
         return authenticationFilter;
-    }
+    }*/
 }

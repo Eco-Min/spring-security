@@ -25,11 +25,16 @@ public class RestAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public RestAuthenticationFilter(HttpSecurity http) {
+/*    public RestAuthenticationFilter(HttpSecurity http) {
         super(new AntPathRequestMatcher("/api/login", "POST"));
         // SecurityContextRepository 설정 기본은 RequestAttributeSecurityContextRepository
         // RequestAttributeSecurityContextRepository 는 Request 에서 SecurityContext 를 가져오거나 저장하여 세션에는 값이 없다.
         setSecurityContextRepository(getSecurityContextRepository(http));
+    }*/
+
+    // Dsl 방식으로 설정할 때 HttpSecurity 를 제거 하고 사용 (url 이 지정되어 있다고 가정)
+    public RestAuthenticationFilter() {
+        super(new AntPathRequestMatcher("/api/login", "POST"));
     }
 
     protected RestAuthenticationFilter(String defaultFilterProcessesUrl) {
@@ -54,7 +59,7 @@ public class RestAuthenticationFilter extends AbstractAuthenticationProcessingFi
         return getAuthenticationManager().authenticate(restAuthenticationToken);
     }
 
-    private SecurityContextRepository getSecurityContextRepository(HttpSecurity http) {
+    public SecurityContextRepository getSecurityContextRepository(HttpSecurity http) {
         SecurityContextRepository securityContextRepository = http.getSharedObject(SecurityContextRepository.class);
 
         if (securityContextRepository == null) {
