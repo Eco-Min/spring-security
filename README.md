@@ -20,3 +20,11 @@ http.authorizeHttpRequests(auth -> auth
 - 회원 관리: 회원 리스트, 회원 상세정보, 권한 부여
 - 권한 관리: 권한 리스트, 권한 생성, 수정, 삭제
 - 자원 관리: 자원 리스트, 자원 생성, 삭제, 수정, 권한 매핑
+
+## 프로그래밍 방식에 의한 인가 설정 - MAP (메모리 기반)
+- 프로그래밍 방식에 의한 인가 기능을 위해 CustomDynamicAuthorizationManager 클래스를 만든다.    
+이때 스프링 시큐리티의 인가 클래스인 RequestMatcherDelegatingAuthorizationManager 클래스의 인가 원리를 이해하고 참고한다
+-  맵 방식으로 권한과 자원을 매핑하기 위해 UrlRoleMapper 인터페이스를 구현한 MapBasedUrlRoleMapper 클래스를 만든다
+
+![image](./img/인가흐름도.png)
+![image](./img/map방식인가흐름도.png)

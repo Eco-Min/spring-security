@@ -5,6 +5,7 @@ import com.spring.security.secure.dsl.RestApiDsl;
 import com.spring.security.secure.entrypoint.RestAuthenticationEntryPoint;
 import com.spring.security.secure.handler.FormAccessDeniedHandler;
 import com.spring.security.secure.handler.RestAccessDeniedHandler;
+import com.spring.security.secure.manager.CustomDynamicAuthorizationManager;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -13,11 +14,13 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -38,16 +41,14 @@ public class SecurityConfig {
     private final AuthenticationSuccessHandler restAuthenticationSuccessHandler;
     private final AuthenticationFailureHandler restAuthenticationFailureHandler;
 
+    // RequestMatcherDelegatingAuthorizationManager 이걸 대처 하는게 아닌 mappings 에 CustomAuthorizationManager 를 넣어서 처리
+    private final AuthorizationManager<RequestAuthorizationContext> authorizationManager;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon*", "/*/icon-*").permitAll()
-                        .requestMatchers("/", "/signup", "/login*").permitAll()
-                        .requestMatchers("/user").hasAuthority("ROLE_USER")
-                        .requestMatchers("/manager").hasAuthority("ROLE_MANAGER")
-                        .requestMatchers("/admin").hasAuthority("ROLE_ADMIN")
-                        .anyRequest().authenticated()
+                        .anyRequest().access(authorizationManager)
                 )
                 .formLogin(form -> form
                         .loginPage("/login").permitAll()
