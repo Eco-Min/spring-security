@@ -1,6 +1,8 @@
 package com.spring.security.secure.manager;
 
+import com.spring.security.admin.repository.ResourcesRepository;
 import com.spring.security.secure.mapper.MapBasedUrlRoleMapper;
+import com.spring.security.secure.mapper.PersistentUrlRoleMapper;
 import com.spring.security.secure.service.DynamicAuthorizationService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -23,14 +25,19 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public class CustomDynamicAuthorizationManager implements AuthorizationManager<RequestAuthorizationContext> {
 
-    private static final AuthorizationDecision DENY = new AuthorizationDecision(false);
-    private final HandlerMappingIntrospector handlerMappingIntrospector;
+//    private static final AuthorizationDecision DENY = new AuthorizationDecision(false);
+    private static final AuthorizationDecision ACCESS = new AuthorizationDecision(true);
     private List<RequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> mappings;
 
+    private final HandlerMappingIntrospector handlerMappingIntrospector;
+
+    private final ResourcesRepository resourcesRepository;
 
     @PostConstruct
     public void mapping() {
-        DynamicAuthorizationService dynamicAuthorizationService = new DynamicAuthorizationService(new MapBasedUrlRoleMapper());
+        DynamicAuthorizationService dynamicAuthorizationService
+//                = new DynamicAuthorizationService(new MapBasedUrlRoleMapper());
+                = new DynamicAuthorizationService(new PersistentUrlRoleMapper(resourcesRepository));
 
         mappings = dynamicAuthorizationService.getUrlRoleMappings()
                 .entrySet().stream()
@@ -63,7 +70,8 @@ public class CustomDynamicAuthorizationManager implements AuthorizationManager<R
                         new RequestAuthorizationContext(request.getRequest(), matchResult.getVariables()));
             }
         }
-        return DENY;
+//        return DENY;
+        return ACCESS;
     }
 
     private AuthorizationManager<RequestAuthorizationContext> customAuthorizationManager(String role) {

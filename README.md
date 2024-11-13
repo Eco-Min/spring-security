@@ -28,3 +28,9 @@ http.authorizeHttpRequests(auth -> auth
 
 ![image](./img/인가흐름도.png)
 ![image](./img/map방식인가흐름도.png)
+
+## DB 방식 인가 설정
+- DB 방식 인가 설정을 위해 JPA를 사용하여 권한과 자원을 매핑하는 테이블을 만든다
+- UrlRoleMapper 인터페이스를 구현한 PersistentUrlRoleMapper(DbBasedUrlRoleMapper) 클래스를 만든다
+
+![image](./img/Db인가방식.png)

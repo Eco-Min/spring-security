@@ -20,9 +20,12 @@ public class UserService {
 
     @Transactional
     public void createUser(Account account) {
-        Role role = roleRepository.findByRoleName("ROLE_USER");
+//        Role role = roleRepository.findByRoleName("ROLE_USER");
         Set<Role> roles = new HashSet<>();
-        roles.add(role);
+        for (Role userRole : account.getUserRoles()) {
+            Role role = roleRepository.findByRoleName(userRole.getRoleName());
+            roles.add(role);
+        }
         account.setUserRoles(roles);
         userRepository.save(account);
     }
