@@ -1,7 +1,6 @@
 package com.spring.security.secure.manager;
 
 import com.spring.security.admin.repository.ResourcesRepository;
-import com.spring.security.secure.mapper.MapBasedUrlRoleMapper;
 import com.spring.security.secure.mapper.PersistentUrlRoleMapper;
 import com.spring.security.secure.service.DynamicAuthorizationService;
 import jakarta.annotation.PostConstruct;
@@ -20,33 +19,38 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class CustomDynamicAuthorizationManager implements AuthorizationManager<RequestAuthorizationContext> {
 
-//    private static final AuthorizationDecision DENY = new AuthorizationDecision(false);
+    //    private static final AuthorizationDecision DENY = new AuthorizationDecision(false);
     private static final AuthorizationDecision ACCESS = new AuthorizationDecision(true);
-    private List<RequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> mappings;
-
     private final HandlerMappingIntrospector handlerMappingIntrospector;
-
     private final ResourcesRepository resourcesRepository;
+    private List<RequestMatcherEntry<AuthorizationManager<RequestAuthorizationContext>>> mappings;
+    DynamicAuthorizationService dynamicAuthorizationService;
 
     @PostConstruct
     public void mapping() {
-        DynamicAuthorizationService dynamicAuthorizationService
+        /*DynamicAuthorizationService dynamicAuthorizationService
 //                = new DynamicAuthorizationService(new MapBasedUrlRoleMapper());
-                = new DynamicAuthorizationService(new PersistentUrlRoleMapper(resourcesRepository));
+                = new DynamicAuthorizationService(new PersistentUrlRoleMapper(resourcesRepository));*/
+        dynamicAuthorizationService = new DynamicAuthorizationService(new PersistentUrlRoleMapper(resourcesRepository));
+
+        setMapping();
+
+    }
+
+    private void setMapping() {
 
         mappings = dynamicAuthorizationService.getUrlRoleMappings()
                 .entrySet().stream()
                 .map(entry -> new RequestMatcherEntry<>(
                         new MvcRequestMatcher(handlerMappingIntrospector, entry.getKey()),
                         customAuthorizationManager(entry.getValue())
-                ))
-                .toList();
-
+                )).collect(Collectors.toList());
     }
 
     @Override
@@ -85,4 +89,8 @@ public class CustomDynamicAuthorizationManager implements AuthorizationManager<R
         return null;
     }
 
+    public synchronized void reload() {
+        mappings.clear();
+        setMapping();
+    }
 }

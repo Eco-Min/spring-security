@@ -19,13 +19,11 @@ public class PersistentUrlRoleMapper implements UrlRoleMapper{
 
     @Override
     public Map<String, String> getUrlRoleMappings() {
+        urlRoleMappings.clear();
         List<Resources> resourcesList = resourcesRepository.findAllResources();
 
-        resourcesList.forEach(re -> {
-            re.getRoleSet().forEach(role ->{
-                urlRoleMappings.put(re.getResourceName(), role.getRoleName());
-            });
-        });
+        resourcesList.forEach(re -> re.getRoleSet().forEach(role ->
+                urlRoleMappings.put(re.getResourceName(), role.getRoleName())));
 
         return urlRoleMappings;
     }

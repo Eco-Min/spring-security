@@ -34,3 +34,9 @@ http.authorizeHttpRequests(auth -> auth
 - UrlRoleMapper 인터페이스를 구현한 PersistentUrlRoleMapper(DbBasedUrlRoleMapper) 클래스를 만든다
 
 ![image](./img/Db인가방식.png)
+
+## 인가 설정 실시간 반영
+- 인가 설정을 실시간으로 반영하기 위해 인가 설정을 DB에 저장하고, 설정이 변경되면 캐시를 갱신하는 방법을 학습한다
+- ResourcesServiceImpl 에서 자원을 추가하거나 삭제할 때 인가 규칙이 즉시 적용 되도륵   
+CustomDynamicAuthorizationManager 클래스의 캐시를 갱신한다
+- CustomDynamicAuthorizationManager 클래스의 캐시를 갱신하기 위헤 mappings 를 clear 어 한후 reload 한다.
