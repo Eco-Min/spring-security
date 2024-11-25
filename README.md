@@ -40,3 +40,14 @@ http.authorizeHttpRequests(auth -> auth
 - ResourcesServiceImpl 에서 자원을 추가하거나 삭제할 때 인가 규칙이 즉시 적용 되도륵   
 CustomDynamicAuthorizationManager 클래스의 캐시를 갱신한다
 - CustomDynamicAuthorizationManager 클래스의 캐시를 갱신하기 위헤 mappings 를 clear 어 한후 reload 한다.
+
+## 계층적 권한 적용하기 - Role Hierarchy
+- 권한 구조를 만들고 권한의 계층을 두어 여러 권한을 가지게 만들어야 한다.
+- ex> admin -> manager / user / guest 권한을 한번에 획득 하여야 한다.
+- 아래처럼 만들어서 Security 에 넘겨야 한다.
+    ``` text
+    ROLE_ADMIN > ROLE_MANAGER
+    ROLE_ADMIN > ROLE_DBA
+    ROLE_MANAGER > ROLE_USER
+    ROLE_DBA > ROLE_USER
+    ```
